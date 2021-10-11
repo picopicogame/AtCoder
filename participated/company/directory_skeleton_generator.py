@@ -25,6 +25,9 @@ source_code_string = """\
 
 import sys
 
+# 再帰のリミットを挙げる
+sys.setrecursionlimit(10**6)
+
 
 def input():
     return sys.stdin.readline()
