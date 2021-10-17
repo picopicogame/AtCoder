@@ -1,7 +1,6 @@
 
 import sys
 
-# 再帰のリミットをあげる
 sys.setrecursionlimit(10**6)
 
 
