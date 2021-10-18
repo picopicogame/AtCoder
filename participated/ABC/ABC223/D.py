@@ -5,7 +5,7 @@ import sys
 from collections import deque
 import heapq
 
-"""参考:https://atcoder.jp/contests/abc223/submissions/26660061"""
+"""参考:https://atcoder.jp/contests/abc223/submissions/26583631"""
 
 # 再帰のリミットをあげる
 sys.setrecursionlimit(10**6)
@@ -17,46 +17,39 @@ def input():
 def resolve():
     n, m = map(int, input().split())
     graph = [[] for _ in range(n)]
+
+    indeg = [0 for _ in range(n)]
     for _ in range(m):
         a, b = map(int, input().split())
-        graph[b - 1].append(a - 1)
+        a -= 1
+        b -= 1
+        indeg[b] += 1 # 各頂点が入ってくる辺（入次数）をいくつ持っているか
+        graph[a].append(b) # 隣接行列
 
+    # 次数0の頂点を管理するheapキュー
+    heap_list = []
+    heapq.heapify(heap_list)
+
+    # 各頂点に次数0の頂点を調べ、あればheapキューに入れる
     for i in range(n):
-        heapq.heapify(graph[i])
+        if indeg[i] == 0:
+            heapq.heappush(heap_list, i)
 
-    key = [i for i in range(n)]
-
-    graph_dic = dict(zip(key,graph))
-    temp_que = deque()
+    # 解答リスト
     ans_li = []
 
-    for j in range(n):
-    #while temp_que:
-        for i in graph_dic.keys():
-            if len(graph_dic[i]) == 0:
-                temp_que.append(i)
-                break
+    # 幅優先探索
+    while heap_list:
+        i = heapq.heappop(heap_list)
+        ans_li.append(i)
+        for index in graph[i]:
+            # 各頂点の入次数を減らす
+            indeg[index] -= 1
+            # 減らした結果、その頂点の入次数が0になるなら、heapキューに入れる
+            if indeg[index] == 0:
+                heapq.heappush(heap_list, index)
 
-
-        if len(temp_que) == 0:
-            break
-
-        pop_index = temp_que.popleft()
-        ans_li.append(pop_index)
-        graph_dic.pop(pop_index)
-
-        for vertex_list in graph_dic:
-            #if len(graph_dic[vertex_list]) == 0:
-             #   continue
-            #heapq.heappop(graph_dic[vertex_list])
-            #print(graph_dic[vertex_list])
-
-            graph_dic[vertex_list] = [s for s in graph_dic[vertex_list] if s !=pop_index ]
-
-
-
-
-
+    # トポロジカルソートをしても入次数を持つ頂点があるなら解答なし
     if len(ans_li) != n:
         print("-1")
         exit()
