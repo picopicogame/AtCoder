@@ -13,43 +13,47 @@ def input():
 
 def resolve():
     n, q = map(int, input().split())
-    query_li = [list(map(int, input().split())) for _ in range(q)]
 
-    print(query_li)
-    result_deque = deque()
-    temp_deque = deque()
-    for i in range(q):
-        if query_li[i][0] == 1:
-            print("test")
-            q_n, x, y = query_li[i]
-            temp_deque.append(x)
-            temp_deque.append(y)
-            for j, deq in enumerate(result_deque):
-                first = deq[0]
-                last = deq[-1]
-                if first == y:
-                    for k, deq2 in enumerate(result_deque):
-                        last2 = deq2[-1]
-                        if last2 == x:
-                            result_deque[j].append(result_deque[k])
-                            break
-                    result_deque[j][0] = x
-                    break
-                elif last == x:
-                    for k, deq2 in enumerate(result_deque):
-                        first2 = deq2[0]
-                        if first2 == y:
-                            result_deque[j].append(result_deque[k])
-                            break
-                    result_deque[j][-1] = y
-                    break
+    front_deq = deque()
+    back_deq = deque()
+    ans_list = []
 
-            result_deque.append(temp_deque)
+    for i in range(n+1):
+        front_deq.append(0)
+        back_deq.append(0)
+
+    while q:
+        q -= 1
+        temp_li = list(map(int, input().split()))
+        c = temp_li[0]
+        x = temp_li[1]
+
+        if len(temp_li) == 3:
+            y = temp_li[2]
+
+        if c == 1:
+            back_deq[x] = y
+            front_deq[y] = x
+        elif c == 2:
+            back_deq[x] = 0
+            front_deq[y] = 0
+        else:
+            while front_deq[x] != 0:
+                x = front_deq[x]
+
+            ans = []
+            while x != 0:
+                ans.append(x)
+                x = back_deq[x]
+
+            ans_list.append(ans)
+
+    for answer in ans_list:
+        print(len(answer), *answer)
 
 
 
 
-    print(result_deque)
 
 if __name__ == "__main__":
     resolve()
